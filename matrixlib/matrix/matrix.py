@@ -1,9 +1,11 @@
 from typing import TypeVar, Iterable
+from copy import deepcopy
 
 # type variables describe method's signature
 T = TypeVar('T', int, float)
 In = TypeVar('In', int, slice)
 R = TypeVar('R', float, list[list[float]])
+M = TypeVar('M', 'Matrix', float, int)
 
 
 # purely helper class for using slice feature.
@@ -175,7 +177,8 @@ class Matrix():
             add differently sized matrix
             or non-matrix object
 
-        Returns:
+        Returns
+        ----------
         Matrix
             Matrix which is the result
             of adding one to the other
@@ -194,3 +197,68 @@ class Matrix():
         else:
             raise ValueError(
                 f"operand \"+\" is not supported for Matrix and {type(other)}")
+
+    def __mul__(self, other: M) -> 'Matrix':
+        """
+        multiplying method for either multiplying
+        the matrix by a number or another matrix
+
+        Parameters
+        ----------
+        other: TypeVar('Matrix', float, int)
+            an instance to multiply by
+
+        Raises
+        ----------
+        ValueError
+            raised if parameter does not
+            match any of types (int, float, Matrix)
+
+        Returns
+        ----------
+        Matrix
+            the result of multiplication
+
+        """
+        if isinstance(other, float) or isinstance(other, int):
+            rows, columns = self.get_dimensions()
+            new_matrix = deepcopy(self.__matrix)
+            for row in range(rows):
+                for column in range(columns):
+                    new_matrix[row][column] *= other
+            return Matrix(new_matrix)
+
+        elif isinstance(other, Matrix):
+            f_rows, f_columns = self.get_dimensions()
+            s_rows, s_columns = other.get_dimensions()
+            if f_rows != s_columns:
+                raise ValueError("number of rows in first matrix must be equal\
+                    to number of columns in other")
+            size = min(f_rows, s_columns)
+            new_matrix = [[0 for column in range(size)] for row in range(size)]
+
+            def evaluate_el(row, column):
+                result = 0
+                for i in range(len(row)):
+                    result += row[i] * column[i]
+                return result
+
+            for row in range(size):
+                for column in range(size):
+                    new_matrix[row][column] = \
+                        evaluate_el(self[row + 1][:][0], list(
+                            map(lambda el: el[0], other[:][column + 1])))
+
+            return Matrix(new_matrix)
+
+        else:
+            raise ValueError(
+                f"operand \"*\" is not supported for Matrix and {type(other)}")
+
+    # methods to make life easier
+    # no need to provide docs on them
+    def __rmul__(self, other: M) -> 'Matrix':
+        return self * other
+
+    def __neg__(self) -> 'Matrix':
+        return self * -1

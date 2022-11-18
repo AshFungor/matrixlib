@@ -70,12 +70,35 @@ class TestMatrixClass(unittest.TestCase):
             _2 = Matrix([[1, 2], [3, 4]])
             _1 + _2
 
-    # test if matrix can only be added to matrix
+    # N12 test if matrix can only be added to matrix
     def test_add_diff_type_error(self):
         with self.assertRaises(ValueError):
             _1 = Matrix([[1, 2, 1], [3, 4, 4]])
             _2 = 2
             _1 + _2
+
+    # N13 test if multiplying by a number works as intended
+    def test_multiplying_matrix_and_a_number(self):
+        sample_matrix = Matrix([[1, 2], [1, 2]])
+        self.assertEqual((sample_matrix * 12)[:][:], [[12, 24], [12, 24]])
+
+    # N14 test if matrix multiplication is done correctly
+    # (1 2) * (1 2) = (1*1 + 2*1, 1*2 + 2*4)
+    # (1 2)   (1 4)   (1*1 + 2*1, 1*2 + 2*4)
+    def test_multiplying_matrix_and_matrix(self):
+        _1 = Matrix([[1, 2], [1, 2]])
+        _2 = Matrix([[1, 2], [1, 4]])
+        self.assertEqual((_1 * _2)[:][:], [[3, 10], [3, 10]])
+
+    # N15 test '-[exp]' operator
+    def test_negative_operator(self):
+        self.assertEqual(
+            (-Matrix([[1, 2], [1, 2]]))[:][:], [[-1, -2], [-1, -2]])
+
+    # N16 test reversed multiplication (number * matrix) <=> (matrix * number)
+    def test_r_multiplying_function(self):
+        self.assertEqual(
+            (12 * Matrix([[1, 2], [1, 2]]))[:][:], [[12, 24], [12, 24]])
 
 
 if __name__ == "__main__":
