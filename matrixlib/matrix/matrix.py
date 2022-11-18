@@ -1,6 +1,36 @@
 from typing import TypeVar, Iterable
 
+# type variables describe method's signature
 T = TypeVar('T', int, float)
+In = TypeVar('In', int, slice)
+R = TypeVar('R', float, list[list[float]])
+
+
+# purely helper class for using slice feature.
+# the first slice returns this class with selected rows 
+# passed to constructor, second slice selects columns
+class _TempMatrixSlice():
+
+    def __init__(self, matrix_iterable: list[list[float]]):
+        self.__matrix = matrix_iterable
+
+    def __getitem__(self, request: In) -> R:
+        result = []
+        if isinstance(request, int):
+            for row in self.__matrix:
+                result.append([row[request - 1]])
+        elif isinstance(request, slice):
+            start = 1 if request.start is None else request.start
+            for row in self.__matrix:
+                result.append(
+                    row[start - 1:request.stop:request.step])
+        else:
+            raise ValueError("parameter must be of type int or slice")
+
+        if len(result) == 1 and len(result[0]) == 1:
+            return result[0][0]
+        else:
+            return result
 
 
 class Matrix():
@@ -93,3 +123,40 @@ class Matrix():
         for row in self.__matrix:
             print(' '.join(
                 map(lambda element: el_format(element, precision), row)))
+
+    def __getitem__(self, request: In) -> _TempMatrixSlice:
+        """
+        standard index access to matrix elements.
+        Remember to always use double square brackets
+        ([][]) when using this method.
+
+        Parameters
+        ----------
+        request: TypeVar(int, slice)
+            use [index] to get access to specific row
+            or column, slices are also supported
+   
+        Raises
+        ----------
+        ValueError
+            request must be int or slice type
+
+        Returns
+        ----------
+        TypeVar(list[list[float]], float)
+            returns single element if [x][y]
+            notation is used, otherwise
+            returns list[list[float]]
+        """
+
+        if isinstance(request, int):
+            return _TempMatrixSlice([self.__matrix[request - 1]])
+        if isinstance(request, slice):
+            start = 1 if request.start is None else request.start
+            return _TempMatrixSlice(
+                self.__matrix[start - 1:request.stop:request.step])
+        else:
+            raise ValueError("parameter must be of type int or slice")
+
+
+
