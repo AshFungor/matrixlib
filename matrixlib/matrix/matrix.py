@@ -158,7 +158,7 @@ class Matrix():
         else:
             raise ValueError("parameter must be of type int or slice")
 
-    def __add__(self, other: Matrix) -> Matrix:
+    def __add__(self, other: 'Matrix') -> 'Matrix':
         """
         operator '+' support. Note, matrixes must
         be the same size.
