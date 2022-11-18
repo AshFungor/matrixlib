@@ -7,7 +7,7 @@ R = TypeVar('R', float, list[list[float]])
 
 
 # purely helper class for using slice feature.
-# the first slice returns this class with selected rows 
+# the first slice returns this class with selected rows
 # passed to constructor, second slice selects columns
 class _TempMatrixSlice():
 
@@ -40,11 +40,11 @@ class Matrix():
 
     Methods
     ----------
-    get_dimensions(self) -> (int, int)
+    get_dimensions() -> (int, int)
         use this method to get dimensions of
         the matrix, in the following form
         (number_of_rows, number_of_columns)
-    display(self, precision: int) -> None
+    display(precision: int) -> None
         method is used to print matrix's
         contents to console
     """
@@ -135,7 +135,7 @@ class Matrix():
         request: TypeVar(int, slice)
             use [index] to get access to specific row
             or column, slices are also supported
-   
+
         Raises
         ----------
         ValueError
@@ -158,5 +158,39 @@ class Matrix():
         else:
             raise ValueError("parameter must be of type int or slice")
 
+    def __add__(self, other: Matrix) -> Matrix:
+        """
+        operator '+' support. Note, matrixes must
+        be the same size.
 
+        Parameters
+        ----------
+        other: Matrix
+            second matrix to add to the first
 
+        Raises
+        ----------
+        ValueError
+            this error appears if you try to
+            add differently sized matrix
+            or non-matrix object
+
+        Returns:
+        Matrix
+            Matrix which is the result
+            of adding one to the other
+        """
+        if isinstance(other, Matrix):
+            rows, columns = other.get_dimensions()
+            if self.get_dimensions() == (rows, columns):
+                other_raw_matrix = other[:][:]
+                for row in range(rows):
+                    for column in range(columns):
+                        other_raw_matrix[row][column] += \
+                            self[row + 1][column + 1]
+                return Matrix(other_raw_matrix)
+            else:
+                raise ValueError("matrixes must be the same size")
+        else:
+            raise ValueError(
+                f"operand \"+\" is not supported for Matrix and {type(other)}")
