@@ -4,9 +4,9 @@ from matrix_errors import DimensionsError
 
 # type variables describe method's signature
 T = TypeVar('T', int, float)
-In = TypeVar('In', int, slice)
-R = TypeVar('R', float, list[list[float]])
-M = TypeVar('M', 'Matrix', float, int)
+Index = TypeVar('In', int, slice)
+Result = TypeVar('R', float, list[list[float]])
+Operand = TypeVar('M', 'Matrix', float, int)
 
 
 # purely helper class for using slice feature.
@@ -17,7 +17,7 @@ class _TempMatrixSlice():
     def __init__(self, matrix_iterable: list[list[float]]):
         self.__matrix = matrix_iterable
 
-    def __getitem__(self, request: In) -> R:
+    def __getitem__(self, request: Index) -> Result:
         result = []
         if isinstance(request, int):
             for row in self.__matrix:
@@ -57,7 +57,7 @@ class Matrix():
         base class constructor. Note, elements of matrix are
         converted to float type after inner initialization.
 
-        Parameters
+        Arguments
         ----------
         matrix_iterable : list[list[T]]
             nested array of lists that represent matrix elements
@@ -109,7 +109,7 @@ class Matrix():
         method is used to print matrix's
         contents to console
 
-        Parameters
+        Arguments
         ----------
         precision: int
             states how many digits are printed
@@ -127,13 +127,13 @@ class Matrix():
             print(' '.join(
                 map(lambda element: el_format(element, precision), row)))
 
-    def __getitem__(self, request: In) -> _TempMatrixSlice:
+    def __getitem__(self, request: Index) -> _TempMatrixSlice:
         """
         standard index access to matrix elements.
         Remember to always use double square brackets
         ([][]) when using this method.
 
-        Parameters
+        Arguments
         ----------
         request: TypeVar(int, slice)
             use [index] to get access to specific row
@@ -166,7 +166,7 @@ class Matrix():
         operator '+' support. Note, matrixes must
         be the same size.
 
-        Parameters
+        Arguments
         ----------
         other: Matrix
             second matrix to add to the first
@@ -199,12 +199,12 @@ class Matrix():
             raise ValueError(
                 f"operand \"+\" is not supported for Matrix and {type(other)}")
 
-    def __mul__(self, other: M) -> 'Matrix':
+    def __mul__(self, other: Operand) -> 'Matrix':
         """
         multiplying method for either multiplying
         the matrix by a number or another matrix
 
-        Parameters
+        Arguments
         ----------
         other: TypeVar('Matrix', float, int)
             an instance to multiply by
@@ -258,7 +258,7 @@ class Matrix():
 
     # methods to make life easier
     # no need to provide docs on them
-    def __rmul__(self, other: M) -> 'Matrix':
+    def __rmul__(self, other: Operand) -> 'Matrix':
         return self * other
 
     def __neg__(self) -> 'Matrix':

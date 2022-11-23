@@ -12,4 +12,4 @@ clean:
 	find . -type d -name '*cache*' -exec rm -r {} +
 
 install: build
-	pip install --force-reinstall dist/*.whl
+	$(PIP) install --force-reinstall dist/*.whl
