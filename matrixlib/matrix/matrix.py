@@ -1,5 +1,6 @@
 from typing import TypeVar, Iterable
 from copy import deepcopy
+from matrix_errors import DimensionsError
 
 # type variables describe method's signature
 T = TypeVar('T', int, float)
